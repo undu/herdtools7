@@ -548,7 +548,7 @@ module Make (C : Config) = struct
 
     let read_pte ii addr_m =
       do_read_memory ii addr_m (M.unitT (V.intToV 64))
-        aneutral (AArch64Explicit.(NExp Other))  apte
+        aneutral (AArch64Explicit.(NExp Other)) apte
 
     let read_memory_gen ii addr_m datasize_m accdesc_m =
       let* accdesc = accdesc_m in

@@ -44,9 +44,9 @@ func FetchDescriptor(ee:bit, walkaddress:AddressDescriptor,
     // 64-bit descriptors for AArch64 or AArch32 Long-descriptor format
     // 128-bit descriptors for AArch64 when FEAT_D128 is set and {V}TCR_ELx.d128 is set
 begin
-//   DEBUG(walkaddress.paddress.address);
+//   __DEBUG__(walkaddress.paddress.address);
    let desc = ReadPtePrimitive(walkaddress.paddress.address);
-//   DEBUG(desc);
+   __DEBUG__(walkaddress.paddress.address,desc);
    return (fault_in,desc);
 end
 
@@ -62,7 +62,7 @@ begin
     var descaddress : FullAddress;
     descaddress.address = ComputePtePrimitive(ia);
     descaddress.paspace = tablebase.paspace;
-    DEBUG(ia,descaddress.address);
+    __DEBUG__(ia,descaddress.address);
     return descaddress;
 end
 
@@ -151,4 +151,18 @@ begin
   s1perms.wxn = '0';
   s1perms.overlay = TRUE;
   return s1perms;
+end
+
+// StageOA()
+// =========
+// Given the final walk state (a page or block descriptor), map the untranslated
+// input address bits to the output address
+
+func StageOA(ia:bits(64),d128:bit,tgx:TGx,walkstate:TTWState) => FullAddress
+begin
+  var oa : FullAddress;
+  __DEBUG__(ia);
+  oa.paspace = walkstate.baseaddress.paspace;
+  oa.address = ia;
+  return oa;
 end

@@ -1176,7 +1176,7 @@ module Make (TopConf : AArch64Sig.Config) (V : Value.AArch64ASL) :
             List.filter_map solve_regs rfms
           in
           let () =
-            if _dbg then
+            if true || _dbg then
               Printf.eprintf "With regs solved, still %d rfms.\n%!"
                 (List.length rfms_with_regs)
           in
@@ -1203,8 +1203,13 @@ module Make (TopConf : AArch64Sig.Config) (V : Value.AArch64ASL) :
                   ASLS.pos;
                 }
               in
-              let kfail li = li in
+              let kfail li =
+                let () =
+                  if _dbg then prerr_endline "ASL cat, fail" in
+                li in
               let ksuccess conc _fs (out_sets, out_show) _flags li =
+                let () =
+                  if _dbg then  prerr_endline "ASL cat, success" in
                 (conc, cs, Lazy.force out_sets, Lazy.force out_show) :: li
               in
               check_event_structure test conc kfail ksuccess li
