@@ -41,6 +41,8 @@ let machsize = MachSize.Quad
 let zero = S_Int Z.zero
 let one = S_Int Z.one
 let zeros sz = S_BitVector (BV.zeros sz)
+let bv_of_string s = S_BitVector (BV.of_string s)
+
 (*
  * Integer dump is made assuming a 64bits basis.
  * For instance '-1' in hexadecimal will be printed as
@@ -311,6 +313,11 @@ let try_write_slice positions dst src =
 
 let empty = S_BitVector BV.empty
 let zeros_size_one = S_BitVector (BV.zeros 1)
+
+let bv_of_bool b =
+  S_BitVector ((if b then BV.ones else BV.zeros) 1)
+
+let bv_of_int x = S_BitVector (BV.of_int x)
 
 let printable_z z = norm_signed z
 

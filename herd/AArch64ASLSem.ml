@@ -869,6 +869,9 @@ module Make (TopConf : AArch64Sig.Config) (V : Value.AArch64ASL) :
       let tr_op1 =
         let open Op in
         function
+        | ArchOp1 ASLOp.OA ->
+          fun acc v ->
+            (M.VC.Unop (Op.ArchOp1 (AArch64Op.OA), tr_v v), acc)
         | ArchOp1 op -> tr_arch_op1 op
         | op ->
             let new_op =

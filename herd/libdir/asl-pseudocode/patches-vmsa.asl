@@ -22,14 +22,18 @@ end
 // AArch64.DecodeDescriptorType()
 // ==============================
 // Determine whether the descriptor is a page, block or table
-// Temporarily return Leaf
+// Simplify: invalid or Leaf
 
 func AArch64_DecodeDescriptorType
   (descriptor:bits(N), d128:bit, ds:bit, tgx:TGx, level:integer)
     =>
   DescriptorType
 begin
-  return DescriptorType_Leaf;
+  if descriptor[0] == '0' then
+    return DescriptorType_Invalid;
+  else
+    return DescriptorType_Leaf;
+  end
 end
 
 // FetchDescriptor()
@@ -161,8 +165,35 @@ end
 func StageOA(ia:bits(64),d128:bit,tgx:TGx,walkstate:TTWState) => FullAddress
 begin
   var oa : FullAddress;
-  __DEBUG__(ia);
+  __DEBUG__(ia,walkstate);
   oa.paspace = walkstate.baseaddress.paspace;
-  oa.address = ia;
+  oa.address = walkstate.baseaddress.address;
   return oa;
+end
+
+// AArch64.LeafBase()
+// ==================
+// Extract the address embedded in a block and page descriptor pointing to the
+// base of a memory block
+// Modified -> extract oa field from descriptor
+
+func
+  AArch64_LeafBase(descriptor:bits(N),d128:bit,ds:bit,tgx:TGx,level:integer)
+  => bits(56)
+begin
+  return GetOAPrimitive(descriptor);
+end
+
+
+// AArch64.MemSwapTableDesc()
+// ==========================
+// Perform HW update of table descriptor as an atomic operation
+// Modified -> disabled at the moment
+
+func AArch64_MemSwapTableDesc
+  (fault_in:FaultRecord,prev_desc:bits(N),new_desc:bits(N),
+  ee:bit,descaccess:AccessDescriptor,descpaddr:AddressDescriptor)
+=> (FaultRecord, bits(N))
+begin
+  return (fault_in,new_desc);
 end

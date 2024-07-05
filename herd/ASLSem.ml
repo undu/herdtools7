@@ -504,7 +504,7 @@ module Make (C : Config) = struct
     and primitive_dsb = primitive_db (fun (d, t) -> AArch64Base.DSB (d, t))
 
     (*
-     * Prinitives for read and write events.
+     * Primitives for read and write events.
      *)
 
     let virtual_to_loc_reg =
@@ -550,9 +550,11 @@ module Make (C : Config) = struct
       do_read_memory ii addr_m (M.unitT (V.intToV 64))
         aneutral (AArch64Explicit.(NExp Other)) apte
 
+    let vir_or_phy = if is_kvm then Access.PHY else Access.VIR
+
     let read_memory_gen ii addr_m datasize_m accdesc_m =
       let* accdesc = accdesc_m in
-      do_read_memory ii addr_m datasize_m (accdesc_to_annot true accdesc) aexp avir
+      do_read_memory ii addr_m datasize_m (accdesc_to_annot true accdesc) aexp vir_or_phy
 
     let do_write_memory (ii, poi) addr_m datasize_m value_m an aexp acc =
       let value_m = M.as_data_port value_m in
@@ -568,7 +570,7 @@ module Make (C : Config) = struct
     let write_memory_gen ii addr_m datasize_m value_m accdesc_m =
       let* accdesc = accdesc_m in
       do_write_memory ii addr_m datasize_m value_m
-        (accdesc_to_annot false accdesc)  aexp avir
+        (accdesc_to_annot false accdesc)  aexp vir_or_phy
 
     let loc_sp ii = A.Location_reg (ii.A.proc, ASLBase.ArchReg AArch64Base.SP)
 
@@ -594,6 +596,7 @@ module Make (C : Config) = struct
       M.choiceT c eq_case diff_case
 
     let compute_pte addr = addr >>= M.op1 Op.PTELoc
+    and get_oa pte = pte >>= M.op1 (Op.ArchOp1 ASLOp.OA)
 
     (**************************************************************************)
     (* ASL environment                                                        *)
@@ -704,6 +707,7 @@ module Make (C : Config) = struct
       let bv_var x = bv @@ var x in
       let bv_lit x = bv @@ lit x in
       let bv_64 = bv_lit 64 in
+      let bv_56 = bv_lit 56 in
       let binop = Asllib.ASTUtils.binop in
       let minus_one e = binop MINUS e (lit 1) in
       let pow_2 = binop POW (lit 2) in
@@ -744,6 +748,8 @@ module Make (C : Config) = struct
           ("addr", bv_64) ~returns:bv_64 compute_pte;
         p1r "ReadPtePrimitive"
           ("addr", bv_64) ~returns:bv_64 (read_pte ii_env);
+        p1r "GetOAPrimitive"
+          ("addr", bv_64) ~returns:bv_56 get_oa;
 (* Translations *)
          p1r "UInt"
           ~parameters:[ ("N", None) ]
@@ -872,7 +878,13 @@ module Make (C : Config) = struct
                 patches patches_kvm
             else patches
           and custom_implems =
+            let physmem = (* Final memory read and write *)
+              let name =
+                if is_kvm then "physmem-vmsa.asl"
+                else "physmem-std.asl" in
+              build `ASLv1 name in
             let impls = build `ASLv1 "implementations.asl" in
+            let impls =  impls @ physmem in
             if is_kvm then
               let impls_kvm =  build `ASLv1 "implementations-vmsa.asl" in
               impls @ impls_kvm

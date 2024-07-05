@@ -867,7 +867,7 @@ module
              begin
                match ArchOp.do_op1 op c with
                | None ->
-                   Warn.user_error "Illegal operation %s on %s"
+                   Warn.user_error "Illegal arch operation %s on %s"
                      (ArchOp.pp_op1 true op) (pp_v v)
                | Some c -> Val c
              end)
