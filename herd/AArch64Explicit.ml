@@ -24,3 +24,11 @@ let pp = function
   | NExp AF-> "NExpAF"
   | NExp DB-> "NExpDB"
   | NExp AFDB-> "NExpAFDB"
+
+let is_explicit_annot = function
+  | Exp -> true
+  | NExp _ -> false
+
+and is_not_explicit_annot = function
+  | NExp _ -> true
+  | Exp -> false

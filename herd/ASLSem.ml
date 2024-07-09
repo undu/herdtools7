@@ -94,7 +94,7 @@ module Make (C : Config) = struct
   end
 
   module ASL64AH = struct
-    include GenericArch_herd.Make (ASLBase) (ConfLoc) (V)
+    include ASLExtra.Make (ASLBase) (ConfLoc) (V)
     include ASLBase
 
     let opt_env = true
@@ -547,8 +547,15 @@ module Make (C : Config) = struct
       do_read_memory ii addr_m datasize_m aneutral aexp avir
 
     let read_pte ii addr_m =
-      do_read_memory ii addr_m (M.unitT (V.intToV 64))
-        aneutral (AArch64Explicit.(NExp Other)) apte
+      let* addr = addr_m in
+      let () =
+        Printf.eprintf "read_pte: addr=%s,"
+          (V.pp_v addr) in
+      (do_read_memory ii (M.unitT addr)  (M.unitT (V.intToV 64))
+        aneutral (AArch64Explicit.(NExp Other)) apte >>=
+      fun v ->
+        Printf.eprintf " v=%s\n%!" (V.pp_v v);
+        M.unitT v) |> M.debugT "ReadPte"
 
     let vir_or_phy = if is_kvm then Access.PHY else Access.VIR
 
@@ -597,6 +604,33 @@ module Make (C : Config) = struct
 
     let compute_pte addr = addr >>= M.op1 Op.PTELoc
     and get_oa pte = pte >>= M.op1 (Op.ArchOp1 ASLOp.OA)
+    and get_offset ma = ma >>= M.op1 Op.Offset
+
+    let data_abort_fault (ii,_) addr write statuscode =
+      let* loc = addr
+      and* write = write
+      and* statuscode = statuscode  in
+      let d =
+        match Option.bind (V.as_scalar write) ASLScalar.as_bool with
+        | Some true -> Dir.W
+        | Some false -> Dir.R
+        | None ->
+            Warn.fatal "data_abort boolean expected, found %s"
+              (V.pp true write)
+      and ft =
+        let open FaultType.AArch64 in
+        match  Option.bind (V.as_scalar statuscode) ASLScalar.as_int with
+        | Some 1 -> MMU AccessFlag
+        | Some 6 -> MMU Translation
+        | Some 5 -> MMU Permission
+        | _ -> assert false
+      and loc = A.Location_global loc in
+      let () =        
+        Printf.eprintf "Generate Fault(%s,%s,%s)\n%!"
+          (A.pp_location loc)
+          (Dir.pp_dirn d)
+          (FaultType.AArch64.pp ft) in
+      M.mk_singleton_es (Act.Fault (ii,loc,d,ft)) ii |> M.debugT "FAULT" >>! []
 
     (**************************************************************************)
     (* ASL environment                                                        *)
@@ -707,7 +741,7 @@ module Make (C : Config) = struct
       let bv_var x = bv @@ var x in
       let bv_lit x = bv @@ lit x in
       let bv_64 = bv_lit 64 in
-      let bv_56 = bv_lit 56 in
+      let ia_msb = 8 in
       let binop = Asllib.ASTUtils.binop in
       let minus_one e = binop MINUS e (lit 1) in
       let pow_2 = binop POW (lit 2) in
@@ -749,7 +783,12 @@ module Make (C : Config) = struct
         p1r "ReadPtePrimitive"
           ("addr", bv_64) ~returns:bv_64 (read_pte ii_env);
         p1r "GetOAPrimitive"
-          ("addr", bv_64) ~returns:bv_56 get_oa;
+          ("addr", bv_64) ~returns:(bv_lit (64-ia_msb)) get_oa;
+        p1r "OffsetPrimitive"
+          ("addr", bv_64) ~returns:(bv_lit ia_msb) get_offset;
+        p3 "DataAbortPrimitive"
+          ("addr",bv_64) ("write",boolean) ("statuscode",integer)
+          (data_abort_fault ii_env);
 (* Translations *)
          p1r "UInt"
           ~parameters:[ ("N", None) ]
@@ -803,10 +842,9 @@ module Make (C : Config) = struct
                 if b then m2 else m3
              | b ->
                 let () = pp () in
-                M.asl_data (to_int_signed b) (fun v -> M.choiceT v m2 m3))
-
-
-
+                M.asl_data
+                  (to_int_signed b)
+                  (fun v -> M.choiceT v m2 m3))
         let delay m k = M.delay_kont "ASL" m k
         let failT e v = M.failT e v
         let return = M.unitT

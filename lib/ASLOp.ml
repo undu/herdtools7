@@ -112,6 +112,10 @@ let is_interval_from_to hi lo = function
 
 let do_is_interval_from hi =  do_is_interval_from_to hi 0
 
+let is_interval_from hi = function
+  | x::xs when x=hi -> do_is_interval_from hi xs
+  | _ -> false
+
 (* Lower bits of address *)
 let is_address_mask = function
   | [] -> false
@@ -164,7 +168,6 @@ let do_op op c1 c2 =
         | Constant.PteVal _ -> return c2
         | _ ->  set_slice positions c1 c2
       else if is_interval_from_to 127 64 positions then begin
-        prerr_endline "ICI ICI" ;
         match c1 with
         | Constant.PteVal _ -> return c1
         | _ ->  set_slice positions c1 c2
@@ -216,11 +219,10 @@ let do_op1 op cst =
                 Some (Constant.Concrete (ASLScalar.bv_of_int af))
             | [9;8;] ->
               (* Sharability domain -> inner sharable *)
-              Some (Constant.Concrete (ASLScalar.of_string "10"))
+              Some (Constant.Concrete (ASLScalar.bv_of_string "10"))
             | [7;6;] -> (* AP *)
-                let db =  1-pte.AArch64PteVal.db
-                and el0 = pte.AArch64PteVal.el0 in
-                Some (Constant.Concrete (ASLScalar.bv_of_int (2*db+el0)))
+                let db =  1-pte.AArch64PteVal.db in
+                Some (Constant.Concrete (ASLScalar.bv_of_bits [db;0;]))
             | [5;] ->
               (* EL0 *)
                 Some (Constant.Concrete ASLScalar.zeros_size_one)
@@ -230,7 +232,8 @@ let do_op1 op cst =
             | [0;]  ->
               (* Valid *)
                 let valid = pte.AArch64PteVal.valid in
-                Some (Constant.Concrete (ASLScalar.bv_of_int valid))
+                Printf.eprintf "Valid=%d\n%!" valid ;
+                Some (Constant.Concrete (ASLScalar.bv_of_bit valid))
             | _ -> None
           end
       | Constant.Symbolic x ->

@@ -48,6 +48,9 @@ module type S =
       val pp : bool (* hexa *) -> v -> string
       val pp_unsigned : bool (* hexa *) -> v -> string
 
+      val as_constant : v -> Cst.v option
+      val as_scalar : v -> Cst.Scalar.t option
+
 (* Some architecture may somehow normalize values before
    printing them. *)
       val printable : v -> v

@@ -91,6 +91,8 @@ type ('scalar, 'pte, 'instr) t =
   | Instruction of 'instr  (** An instruction. *)
   | Frozen of int (** Frozen symbolic value. *)
 
+val as_scalar : ('scalar, 'pte, 'instr) t -> 'scalar option
+
 val compare :
   ('scalar -> 'scalar -> int) ->
     ('pte -> 'pte -> int) ->

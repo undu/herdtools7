@@ -262,7 +262,7 @@ type Feature of enumeration {
 
 // Inferred from manual...
 
-type SystemControl of bits(64) {
+type SCTLRType of bits(64) {
   [0] M,
   [1] A,
   [2] C,
@@ -323,7 +323,16 @@ type SystemControl of bits(64) {
   [63] TIDCP,
 };
 
-var SCTLR_EL1 : SystemControl;
+var SCTLR_EL1 : SCTLRType;
+
+// Infered from manual
+
+type HPFARType of bits(64) {
+  [47:4] FIPA,
+  [63] NS,
+};
+
+var HPFAR_EL2 : HPFARType;
 
 // =============================================================================
 
@@ -592,6 +601,12 @@ end
 // the next instruction.
 
 func Hint_Branch(hint : BranchType)
+begin
+  return;
+end
+
+// Dubious...
+func EndOfInstruction()
 begin
   return;
 end

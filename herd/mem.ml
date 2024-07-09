@@ -662,7 +662,9 @@ module Make(C:Config) (S:Sem.Semantics) : S with module S = S	=
           W.warn "%i abstract event structures\n%!" i ;
           []
       | (vcl,es)::xs ->
-          let es = if C.debug.Debug_herd.monad then es else relabel es in
+        let es =
+          if true || C.debug.Debug_herd.monad then es
+          else relabel es in
           let es =
             { es with E.procs = procs; E.po = if do_deps then transitive_po es else es.E.po } in
           (i,vcl,es)::index xs (i+1) in
@@ -834,6 +836,8 @@ let match_reg_events es =
                   (A.pp_location loc)
                   (A.V.pp_v v_loaded)
                   (A.V.pp_v v_stored) ;
+                let module PP = Pretty.Make(S) in
+                PP.show_es_rfm test es rfm ;
                 assert false)
           rfm csn in
       if  C.debug.Debug_herd.solver then
@@ -852,12 +856,12 @@ let match_reg_events es =
     let solve_regs test es csn =
       match do_solve_regs test es csn with
       | Some (es,rfm,_) as r ->
-        if C.debug.Debug_herd.solver && C.verbose > 0 then begin
-          let module PP = Pretty.Make(S) in
-          prerr_endline "Reg solved" ;
-          PP.show_es_rfm test es rfm ;
-        end ;
-        r
+          if C.debug.Debug_herd.solver && C.verbose > 0 then begin
+            let module PP = Pretty.Make(S) in
+            prerr_endline "Reg solved, direct" ;
+            PP.show_es_rfm test es rfm
+          end ;
+          r
       | None ->  None
 
 (**************************************)

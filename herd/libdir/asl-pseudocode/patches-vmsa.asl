@@ -30,6 +30,7 @@ func AArch64_DecodeDescriptorType
   DescriptorType
 begin
   if descriptor[0] == '0' then
+    __DEBUG__(descriptor,DescriptorType_Invalid);
     return DescriptorType_Invalid;
   else
     return DescriptorType_Leaf;
@@ -66,7 +67,7 @@ begin
     var descaddress : FullAddress;
     descaddress.address = ComputePtePrimitive(ia);
     descaddress.paspace = tablebase.paspace;
-    __DEBUG__(ia,descaddress.address);
+//    __DEBUG__(ia,descaddress.address);
     return descaddress;
 end
 
@@ -164,10 +165,10 @@ end
 
 func StageOA(ia:bits(64),d128:bit,tgx:TGx,walkstate:TTWState) => FullAddress
 begin
-  var oa : FullAddress;
-  __DEBUG__(ia,walkstate);
+var oa : FullAddress;
+//  __DEBUG__(ia,walkstate);
   oa.paspace = walkstate.baseaddress.paspace;
-  oa.address = walkstate.baseaddress.address;
+  oa.address = walkstate.baseaddress.address + OffsetPrimitive(ia);
   return oa;
 end
 
@@ -196,4 +197,69 @@ func AArch64_MemSwapTableDesc
 => (FaultRecord, bits(N))
 begin
   return (fault_in,new_desc);
+end
+
+// AArch64.DataAbort()
+// ===================
+
+type SilentExit of exception;
+
+func AArch64_DataAbort(vaddress:bits(64),fault:FaultRecord)
+begin
+  __DEBUG__(vaddress);
+  DataAbortPrimitive(vaddress,fault.write,fault.statuscode);
+  throw SilentExit {};
+end
+
+
+// S1TranslationRegime()
+// =====================
+// Stage 1 translation regime for the given Exception level
+
+func S1TranslationRegime(el:bits(2)) => bits(2)
+begin
+  __DEBUG__(el);
+  return EL1;
+end
+
+func S1TranslationRegime() => bits(2)
+begin
+  return EL1;
+end
+
+// PEErrorState()
+// ==============
+// Returns the error state of the PE on taking an error exception:
+// The PE error state reported to software through the exception syndrome also
+// depends on how the exception is taken, and so might differ from the value
+// returned from this function.
+// LUC: Dubious
+
+func PEErrorState(fault:FaultRecord) => ErrorState
+begin
+  return ErrorState_UEO;
+end
+
+// IsFault()
+// =========
+// Return TRUE if a fault is associated with status returned by memory.
+// Luc: and then call  HandleExternalAbort()
+//func IsFault(retstatus:PhysMemRetStatus) => boolean
+// begin
+//  return FALSE;
+// end
+
+
+// HandleExternalAbort()
+// =====================
+// Takes a Synchronous/Asynchronous abort based on fault.
+// Luc Should not be called.
+func
+  HandleExternalAbort
+    (memretstatus:PhysMemRetStatus,iswrite:boolean,
+     memaddrdesc:AddressDescriptor,size:integer,
+     accdesc:AccessDescriptor)
+begin
+//  assert FALSE;
+  return;
 end

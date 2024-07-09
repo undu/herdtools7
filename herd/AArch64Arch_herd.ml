@@ -45,15 +45,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
 
     let is_atomic = AArch64Annot.is_atomic
 
-    let is_explicit_annot = function
-      | Exp -> true
-      | NExp _ -> false
-
-    and is_not_explicit_annot = function
-      | NExp _ -> true
-      | Exp -> false
-
-    and is_ifetch_annot = function
+    let is_ifetch_annot = function
       | NExp IFetch -> true
       | NExp (AF|DB|AFDB|Other)|Exp -> false
 

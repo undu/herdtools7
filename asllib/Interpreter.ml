@@ -1393,6 +1393,10 @@ module Make (B : Backend.S) (C : Config) = struct
     match res with
     | Normal ([ v ], _genv) -> read_value_from v
     | Normal _ -> Error.(fatal_unknown_pos (MismatchedReturnValue "main"))
+    | Throwing (Some (_,ty),_)
+      when Format.asprintf "%a" PP.pp_ty ty = "SilentExit" ->
+        let () = Printf.eprintf "SilentExit!!!\n%!" in
+        return (B.v_of_int 0)
     | Throwing (v_opt, _genv) ->
         let msg =
           match v_opt with
