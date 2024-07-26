@@ -1194,7 +1194,7 @@ module Make (TopConf : AArch64Sig.Config) (V : Value.AArch64ASL) :
             MC.glommed_event_structures test
           in
           let () =
-            if true || _dbg then
+            if _dbg then
               Printf.eprintf "Got rfms back: %d of them.\n%!" (List.length rfms)
           in
           let rfms_with_regs =
@@ -1212,7 +1212,7 @@ module Make (TopConf : AArch64Sig.Config) (V : Value.AArch64ASL) :
             List.filter_map solve_regs rfms
           in
           let () =
-            if true || _dbg then
+            if _dbg then
               Printf.eprintf "With regs solved, still %d rfms.\n%!"
                 (List.length rfms_with_regs)
           in
@@ -1253,7 +1253,7 @@ module Make (TopConf : AArch64Sig.Config) (V : Value.AArch64ASL) :
             List.fold_left check_rfm [] rfms_with_regs
           in
           let () =
-            if true || _dbg then
+            if  _dbg then
               Printf.eprintf "Got %d complete executions.\n%!"
                 (List.length conc_and_pp)
           in

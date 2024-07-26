@@ -232,7 +232,6 @@ let do_op1 op cst =
             | [0;]  ->
               (* Valid *)
                 let valid = pte.AArch64PteVal.valid in
-                Printf.eprintf "Valid=%d\n%!" valid ;
                 Some (Constant.Concrete (ASLScalar.bv_of_bit valid))
             | _ -> None
           end

@@ -548,14 +548,8 @@ module Make (C : Config) = struct
 
     let read_pte ii addr_m =
       let* addr = addr_m in
-      let () =
-        Printf.eprintf "read_pte: addr=%s,"
-          (V.pp_v addr) in
-      (do_read_memory ii (M.unitT addr)  (M.unitT (V.intToV 64))
-        aneutral (AArch64Explicit.(NExp Other)) apte >>=
-      fun v ->
-        Printf.eprintf " v=%s\n%!" (V.pp_v v);
-        M.unitT v) |> M.debugT "ReadPte"
+      do_read_memory ii (M.unitT addr)  (M.unitT (V.intToV 64))
+        aneutral (AArch64Explicit.(NExp Other)) apte
 
     let vir_or_phy = if is_kvm then Access.PHY else Access.VIR
 
@@ -625,12 +619,7 @@ module Make (C : Config) = struct
         | Some 5 -> MMU Permission
         | _ -> assert false
       and loc = A.Location_global loc in
-      let () =        
-        Printf.eprintf "Generate Fault(%s,%s,%s)\n%!"
-          (A.pp_location loc)
-          (Dir.pp_dirn d)
-          (FaultType.AArch64.pp ft) in
-      M.mk_singleton_es (Act.Fault (ii,loc,d,ft)) ii |> M.debugT "FAULT" >>! []
+      M.mk_singleton_es (Act.Fault (ii,loc,d,ft)) ii >>! []
 
     (**************************************************************************)
     (* ASL environment                                                        *)

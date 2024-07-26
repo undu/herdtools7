@@ -82,13 +82,8 @@ module Make (A : S) = struct
 
   let is_local = function
     | Access (_, A.Location_reg (_, r), _, _, _) -> A.is_local r
-    | Access _|Barrier _|Branching _|TooFar _|NoAction
+    | Access _|Fault _|Barrier _|Branching _|TooFar _|NoAction
       -> false
-    | Fault _ as act ->
-        let () =
-          Printf.eprintf "Fault (not local): %s\n%!"
-            (pp_action act) in
-        false
 
   (** Write to PC *)
   let is_wpc = function

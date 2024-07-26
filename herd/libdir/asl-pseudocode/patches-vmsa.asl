@@ -30,7 +30,7 @@ func AArch64_DecodeDescriptorType
   DescriptorType
 begin
   if descriptor[0] == '0' then
-    __DEBUG__(descriptor,DescriptorType_Invalid);
+//    __DEBUG__(descriptor,DescriptorType_Invalid);
     return DescriptorType_Invalid;
   else
     return DescriptorType_Leaf;
@@ -51,7 +51,7 @@ func FetchDescriptor(ee:bit, walkaddress:AddressDescriptor,
 begin
 //   __DEBUG__(walkaddress.paddress.address);
    let desc = ReadPtePrimitive(walkaddress.paddress.address);
-   __DEBUG__(walkaddress.paddress.address,desc);
+//   __DEBUG__(walkaddress.paddress.address,desc);
    return (fault_in,desc);
 end
 
@@ -150,7 +150,7 @@ func
 begin
   var s1perms : S1AccessControls;
   s1perms.r   = '1';
-  s1perms.w   = '1';
+  s1perms.w   = '0';
   s1perms.x   = '0';
   s1perms.gcs = '0';
   s1perms.wxn = '0';
@@ -206,7 +206,7 @@ type SilentExit of exception;
 
 func AArch64_DataAbort(vaddress:bits(64),fault:FaultRecord)
 begin
-  __DEBUG__(vaddress);
+//  __DEBUG__(vaddress);
   DataAbortPrimitive(vaddress,fault.write,fault.statuscode);
   throw SilentExit {};
 end
@@ -218,7 +218,7 @@ end
 
 func S1TranslationRegime(el:bits(2)) => bits(2)
 begin
-  __DEBUG__(el);
+//  __DEBUG__(el);
   return EL1;
 end
 

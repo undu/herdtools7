@@ -944,7 +944,7 @@ module Make (B : Backend.S) (C : Config) = struct
     (* Begin SCond *)
     | S_Cond (e, s1, s2) ->
         let pp () =
-          if true then
+          if _dbg then
             Format.eprintf "@[<3>%a@ @[%a@]@]@." PP.pp_pos s PP.pp_stmt s in
         let*^ v, env' = eval_expr env e in
         choice_with_branch_effect pp v e s1 s2 (eval_block env')
