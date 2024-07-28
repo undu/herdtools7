@@ -81,4 +81,4 @@ cat <<EOF
 }%
 EOF
 fi
-/bin/rm -rf $TMP $TIDX
+rm -rf $TMP $TIDX

@@ -57,7 +57,7 @@ module Make(O:PrettyConf.S) = struct
         "%s -T%s %s > %s 2>/dev/null ; %s %s 2>/dev/null%s"
       generator ext
       name_dot name_ps prog name_ps
-        (if O.debug then "" else sprintf " && /bin/rm -f %s" name_ps) in
+        (if O.debug then "" else sprintf " && rm -f %s" name_ps) in
     let r = Sys.command cmd in
     if O.debug then eprintf "Command: [%s] -> %i\n" cmd r ;
     Handler.pop ()

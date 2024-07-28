@@ -13,13 +13,13 @@ all: docps docpdf dochtml
 luc: dochtml installhtml
 
 install: x86.tar
-	/bin/rm -rf $(INSTALLDIR)/doc && mkdir -p $(INSTALLDIR)/doc
+	rm -rf $(INSTALLDIR)/doc && mkdir -p $(INSTALLDIR)/doc
 	$(MAKE) $(MFLAGS) installhtml
 	$(MAKE) $(MFLAGS) installpdf
 	cp x86.tar $(INSTALLDIR)/doc
 
 clean::
-	/bin/rm -f *~
+	rm -f *~
 SBL=SB+L-00.dot  SB+L-01.dot  SB+L-02.dot  \
  SB+L-03.dot  SB+L-04.dot  SB+L-05.dot
 
@@ -139,7 +139,7 @@ W+RW.dot: tst-co/basic/W+RW.litmus
 # WW.dot WR.dot W+RR.dot W+RW.dot
 
 clean::
-	/bin/rm -f LB.dot SB.dot SB+L.dot SB+OK.dot $(GENDOTS)
+	rm -f LB.dot SB.dot SB+L.dot SB+OK.dot $(GENDOTS)
 
 %.dot: %.litmus
 	$(HERD) -model minimal.cat -conf doc.cfg -showinitrf true -showlegend true -shortlegend true  -show prop -o . $< > /dev/null
@@ -186,7 +186,7 @@ HERDDIR=../herd/libdir
 MAPPLY=mapply7 -j 16
 #Generated latex
 clean::
-	/bin/rm -rf $(GENTEX) $(GENSRC) $(GENIMG)
+	rm -rf $(GENTEX) $(GENSRC) $(GENIMG)
 
 BASIC.tex:tst-co/basic/@all BASIC-img/index.tex
 	sh tools/gen.sh BASIC tst-co/basic/@all > $@
@@ -220,7 +220,7 @@ x86.tar: x86.txt $(X86)
 	rm -rf x86
 
 clean::
-	/bin/rm -f x86.tar
+	rm -f x86.tar
 #tar of x86/ppc allowed tests
 tst-x86.tar:
 	tar -cf tst-x86.tar tst-x86
@@ -232,19 +232,19 @@ tst-arm.tar:
 	tar -cf tst-arm.tar tst-arm
 
 tst-co.tar:
-	/bin/rm -rf /tmp/tst-co && \
+	rm -rf /tmp/tst-co && \
 	cp -r tst-co/src /tmp/tst-co  && \
 	(cd /tmp && tar -cf - tst-co ) > $@
 
 clean::
-	/bin/rm -f tst-ppc.tar tst-x86.tar tst-arm.tar tst-co.tar
+	rm -f tst-ppc.tar tst-x86.tar tst-arm.tar tst-co.tar
 
 #version
 version.tex: ../herdtools7.opam
 	/bin/echo '\def\version{'$$(cat ../VERSION.txt)'}' > $@
 
 clean::
-	/bin/rm -f version.tex
+	rm -f version.tex
 
 #HTML
 HEVEABIN=/usr/local/bin
@@ -314,14 +314,14 @@ html/uniproccat.txt: $(HERDDIR)/uniproccat.cat | html
 	cp $(HERDDIR)/uniproccat.cat $@
 
 cleanhtml:
-	/bin/rm -f html/diy.html \
+	rm -f html/diy.html \
 	 html/*.htoc html/*.haux html/*.hbbl html/*.blg
 
 installhtml: cleanhtml
 	cp -r html/* $(INSTALLDIR)/doc
 
 clean::
-	/bin/rm -rf html
+	rm -rf html
 
 #PS/PDF
 LATEX ?= $(if $(shell which rubber),\
@@ -350,7 +350,7 @@ installpdf:
 	cp pdf/diy.pdf pdf/diy.ps $(INSTALLDIR)/doc
 
 clean::
-	/bin/rm -rf pdf
+	rm -rf pdf
 
 #copy from sources
 hpcx.cfg: $(LITMUSDIR)/hpcx.cfg
@@ -372,7 +372,7 @@ saumur.cfg: $(LITMUSDIR)/saumur.cfg
 	cp $< $@
 
 clean::
-	/bin/rm -f $(CFG) $(GENCAT)
+	rm -f $(CFG) $(GENCAT)
 
 #images
 6.SB.png: 6.SB.dot
@@ -504,7 +504,7 @@ DetourWW.png: DetourWW.dot
 	dot -Tpng $< > $@
 
 clean::
-	/bin/rm -f $(PNG)
+	rm -f $(PNG)
 
 SZ=12
 
@@ -572,8 +572,8 @@ DetourWW.pstex_t: DetourWW.dot
 
 
 clean::
-	/bin/rm -f $(PSTEX)
-	/bin/rm -f $(DOTS:.dot=.fig)
-	/bin/rm -f $(DOTS:.dot=.pstex)
+	rm -f $(PSTEX)
+	rm -f $(DOTS:.dot=.fig)
+	rm -f $(DOTS:.dot=.pstex)
 
 gendots: $(GENDOTS)

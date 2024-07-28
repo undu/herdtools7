@@ -187,7 +187,7 @@ let exec cmd kont =
 (* Use above for making a directory *)
 (************************************)
 
-let mkdir name = exec_stdout (sprintf "/bin/rm -rf %s && mkdir %s" name name)
+let mkdir name = exec_stdout (sprintf "rm -rf %s && mkdir %s" name name)
 
 let mktmpdir () =
   let name = Filename.temp_file  "dir" ".tmp" in
@@ -197,4 +197,4 @@ let mktmpdir () =
 (* does not destroy dir if you want to keep it around *)
 let mkdirp name = exec_stdout (sprintf "mkdir -p %s" name)
 
-let rmdir name = exec_stdout (sprintf "/bin/rm -rf %s" name)
+let rmdir name = exec_stdout (sprintf "rm -rf %s" name)

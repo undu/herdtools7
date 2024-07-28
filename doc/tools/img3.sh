@@ -41,7 +41,7 @@ do
       F=$TAG/$B.png
       printf " \imgsrc{%s}" $F
       neato -s0.8 -Tpng  $name > $F 2>/dev/null
-      /bin/rm $name
+      rm $name
      ;;
     *)
       printf "\ldots"

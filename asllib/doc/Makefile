@@ -89,9 +89,9 @@ ifempty.tex: force
 endif
 
 clean:
-	/bin/rm -f $(PDFS)
-	/bin/rm -f ASLSemanticsLines.tex ASLTypingLines.tex ASLTypeSatisfactionLines.tex ASLASTLines.tex
-	/bin/rm -f *.aux *.log *.fls *.log *.toc *.fdb_latexmk *~
-	/bin/rm -f $(CONTROLS)
-	/bin/rm -f comment.cut
-	/bin/rm -f *.blg *.bbl *.out
+	rm -f $(PDFS)
+	rm -f ASLSemanticsLines.tex ASLTypingLines.tex ASLTypeSatisfactionLines.tex ASLASTLines.tex
+	rm -f *.aux *.log *.fls *.log *.toc *.fdb_latexmk *~
+	rm -f $(CONTROLS)
+	rm -f comment.cut
+	rm -f *.blg *.bbl *.out

@@ -144,11 +144,11 @@ end = struct
 
   let makefile_clean chan extra =
     fprintf chan "clean:\n" ;
-    fprintf chan "\t/bin/rm -f *.o *.s *.t *%s *~%s\n"
+    fprintf chan "\trm -f *.o *.s *.t *%s *~%s\n"
       (Mode.exe Cfg.mode) extra ;
     fprintf chan "\n" ;
     fprintf chan "cleansource:\n" ;
-    fprintf chan "\t/bin/rm -f *.o *.c *.h *.s *~\n" ;
+    fprintf chan "\trm -f *.o *.c *.h *.s *~\n" ;
     fprintf chan "\n" ;
     ()
 
@@ -355,7 +355,7 @@ let dump_shell_cont arch sources utils =
           fprintf chan "GCCOPTS=\"%s\"\n" gcc_opts ;
           let link_opts = RU.get_link_opts  in
           fprintf chan "LINKOPTS=\"%s\"\n" link_opts ;
-          fprintf chan "/bin/rm -f *%s *.s\n" (Mode.exe Cfg.mode) ;
+          fprintf chan "rm -f *%s *.s\n" (Mode.exe Cfg.mode) ;
           List.iter
             (fun s ->
               if Filename.check_suffix s ".c" then
@@ -378,7 +378,7 @@ let dump_shell_cont arch sources utils =
                 "$GCC $GCCOPTS $LINKOPTS -o %s %s %s\n" exe utils_objs src ;
               let srcS = Filename.chop_extension src ^ ".s" in
               let srcT = Filename.chop_extension src ^ ".t" in
-              fprintf chan "$GCC $GCCOPTS -S %s && awk -f show.awk %s > %s && /bin/rm %s\n"
+              fprintf chan "$GCC $GCCOPTS -S %s && awk -f show.awk %s > %s && rm %s\n"
                 src srcS srcT srcS ;
               ())
             (List.rev sources))
@@ -750,7 +750,7 @@ let dump_cross _arch =
     MySys.mkdir src ;
     let cmd =
       let tf = Filename.basename Cfg.tarname in
-      sprintf "mv %s %s && cd %s && tar x%sf %s && /bin/rm -f %s"
+      sprintf "mv %s %s && cd %s && tar x%sf %s && rm -f %s"
         Cfg.tarname src src (Tar.tarz ()) tf tf in
     MySys.exec_stdout cmd ;
     Tar.tar_dir dir
@@ -760,7 +760,7 @@ let dump_cross _arch =
     let src = Filename.concat tgt "src" in
     let com =
       sprintf
-        "mv %s %s && mv %s %s && mv %s %s && /bin/rm -rf %s"
+        "mv %s %s && mv %s %s && mv %s %s && rm -rf %s"
         tgt tmp dir tgt tmp src top in
     MySys.exec_stdout com
   end

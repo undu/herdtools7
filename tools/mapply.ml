@@ -43,7 +43,7 @@ module Task(A:TArg) = struct
     Filename.concat (Filename.get_temp_dir_name ())
       (sprintf "mapply.%i" (getpid()))
 
-  let rmrf dir = ignore (Sys.command (sprintf "/bin/rm -rf %s" dir))
+  let rmrf dir = ignore (Sys.command (sprintf "rm -rf %s" dir))
 
   let _ =
     match A.mode with

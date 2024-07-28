@@ -46,12 +46,12 @@ $(foreach book,$(BOOKS),$(eval $(call make-json-shelf,$(book))))
 $(foreach book,$(BOOKS),$(eval $(call make-book,$(book))))
 
 clean::
-	/bin/rm -f *~
-	/bin/rm -f $(PROG) $(WWW_PROG) catIncludes.ml
-	/bin/rm -f $(JSON_SHELVES)
-	/bin/rm -rf $(WWW_LIB)
+	rm -f *~
+	rm -f $(PROG) $(WWW_PROG) catIncludes.ml
+	rm -f $(JSON_SHELVES)
+	rm -rf $(WWW_LIB)
 
 clean::
-	/bin/rm -rf $(DUNETGT)
+	rm -rf $(DUNETGT)
 
 .PHONY:: force clean web

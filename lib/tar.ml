@@ -75,8 +75,8 @@ module Make(O:Option) : S =
     | 0 -> ()
     | _ -> Warn.fatal "Exec of '%s' failed" cmd
 
-    let rmdir name = exec (sprintf "/bin/rm -rf %s" name)
-    let mkdir name = exec (sprintf "/bin/rm -rf %s && mkdir %s" name name)
+    let rmdir name = exec (sprintf "rm -rf %s" name)
+    let mkdir name = exec (sprintf "rm -rf %s && mkdir %s" name name)
     let direxists name = Sys.file_exists name && Sys.is_directory name
 
 (************)
