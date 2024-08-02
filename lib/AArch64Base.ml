@@ -1228,6 +1228,7 @@ let pp_imm n = "#" ^ string_of_int n
 
 type 'k kinstruction =
   | I_NOP
+  | I_MADD of reg * reg * reg * reg (** Multiply-add *)
 (* Branches *)
   | I_B of lbl | I_BR of reg
   | I_BC of condition * lbl
@@ -1854,6 +1855,8 @@ let do_pp_instruction m =
 
   fun i -> match i with
   | I_NOP -> "NOP"
+  | I_MADD (d, n, m, a) ->
+      sprintf "MADD %s,%s,%s,%s" (pp_reg d) (pp_reg n) (pp_reg m) (pp_reg a)
 (* Branches *)
   | I_B lbl ->
       sprintf "B %s" (pp_label lbl)
@@ -2407,6 +2410,7 @@ let fold_regs (f_regs,f_sregs) =
     -> fold_reg r1 (fold_reg r2 (fold_reg r3 c))
   | I_STXP (_,_,r1,r2,r3,r4)
   | I_MOPL (_,r1,r2,r3,r4)
+  | I_MADD (r1,r2,r3,r4)
     -> fold_reg r1 (fold_reg r2 (fold_reg r3 (fold_reg r4 c)))
   | I_CASP (_,_,r1,r2,r3,r4,r5)
     -> fold_reg r1 (fold_reg r2 (fold_reg r3 (fold_reg r4 (fold_reg r5 c))))
@@ -2443,6 +2447,8 @@ let map_regs f_reg f_symb =
     | Reg (r,s) -> Reg (map_reg r,s) in
 
   fun ins -> match ins with
+  | I_MADD (d, n, m, a) ->
+      I_MADD (map_reg d, map_reg n, map_reg m, map_reg a)
   | I_NOP
 (* Branches *)
   | I_B _
@@ -2788,6 +2794,7 @@ let get_next =
     -> tgt_cons Label.Next lbl
   | I_BLR _|I_BR _|I_RET _ |I_ERET -> [Label.Any]
   | I_NOP
+  | I_MADD _
   | I_LDR _
   | I_LDRSW _
   | I_LDRS _
@@ -3067,6 +3074,7 @@ module PseudoI = struct
 
       let parsed_tr i = match i with
         | I_NOP
+        | I_MADD _
         | I_B _
         | I_BR _
         | I_BC _
@@ -3247,6 +3255,7 @@ module PseudoI = struct
         | I_ST4 _ | I_STZ2G _
           -> 4
         | I_NOP
+        | I_MADD _
         | I_B _ | I_BR _
         | I_BL _ | I_BLR _
         | I_RET _

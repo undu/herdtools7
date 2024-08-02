@@ -73,6 +73,7 @@ let check_op3 op e =
 
 /* Instructions */
 %token NOP HINT HLT
+%token MADD
 %token TOK_B BR CBZ CBNZ TBZ TBNZ
 %token TOK_EQ TOK_NE TOK_GE TOK_GT TOK_LE TOK_LT
 %token TOK_CS TOK_CC TOK_MI TOK_PL TOK_VS TOK_VC TOK_HI TOK_LS TOK_AL
@@ -567,6 +568,8 @@ instr:
 | NOP { I_NOP }
 | HINT NUM { I_NOP }
 | HLT NUM { I_NOP }
+| MADD wreg COMMA wreg COMMA wreg COMMA wreg
+  { I_MADD ($2, $4, $6, $8) }
 /* Branch */
 | TOK_B label_addr { I_B $2 }
 | BR xreg { I_BR $2 }

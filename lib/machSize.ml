@@ -210,8 +210,8 @@ module Tag = struct
 
 end
 
-(* Some size info for load reserve *)
 
+(** Size info for load reserve *)
 type lr_sc =
   | Ld of sz
   | St

@@ -175,7 +175,8 @@ let pp_op1 hexa pp_aop o = match o with
 
 (***********)
 
-type op3 = If
+type op3 = If | Madd
 
 let pp_op3 o s1 s2 s3 = match o with
 | If -> sprintf "%s ? %s : %s" s1 s2 s3
+| Madd -> sprintf "%s * %s + %s" s1 s2 s3

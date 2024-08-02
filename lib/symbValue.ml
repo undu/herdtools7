@@ -938,15 +938,20 @@ module
                 Warn.user_error "Illegal operation %s on %s and %s"
                   (ArchOp.pp_op o) (pp_v v1) (pp_v v2)))
 
-  let op3 If v1 v2 v3 = match v1 with
-  | Val (Concrete x) -> if scalar_to_bool x then v2 else v3
-  | Val
-      (ConcreteVector _|ConcreteRecord _|Symbolic _
-      |Label _|Tag _
-      |PteVal _|Instruction _
-      | Frozen _ as s) ->
-      Warn.user_error "illegal if on symbolic constant %s" (Cst.pp_v s)
-  | Var _ -> raise Undetermined
+  let op3 op v1 v2 v3 =
+    match op with
+    | If -> ( match v1 with
+      | Val (Concrete x) -> if scalar_to_bool x then v2 else v3
+      | Val
+          (ConcreteVector _|ConcreteRecord _|Symbolic _
+          |Label _|Tag _
+          |PteVal _|Instruction _
+          | Frozen _ as s) ->
+          Warn.user_error "illegal if on symbolic constant %s" (Cst.pp_v s)
+      | Var _ -> raise Undetermined
+    )
+    | Madd ->
+      add v3 (binop Mul (Cst.Scalar.mul) v1 v2)
 
   module OrderedValue = struct
     type t = v

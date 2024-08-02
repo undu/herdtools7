@@ -89,6 +89,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
     let is_cmodx_restricted_instruction = function
     | I_B _| I_BL _| I_CBNZ _| I_CBZ _| I_FENCE ISB | I_NOP | I_TBNZ _| I_TBZ _
       -> false
+    | I_MADD _
     | I_ADD_SIMD _| I_ADD_SIMD_S _| I_ADR _| I_ALIGND _| I_ALIGNU _| I_BC _
     | I_BLR _| I_BR _| I_BUILD _| I_CAS _| I_CASBH _| I_CASP _| I_CHKEQ _| I_CHKSLD _
     | I_CHKTGD _| I_CLRTAG _| I_CPYTYPE _| I_CPYVALUE _| I_CSEAL _| I_CSEL _| I_DC _
@@ -295,6 +296,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_CASBH (v,_,_,_,_) | I_SWPBH (v,_,_,_,_)
       | I_LDOPBH (_,v,_,_,_,_) | I_STOPBH (_,v,_,_,_) ->
           Some (bh_to_sz v)
+      | I_MADD _
       | I_NOP|I_B _|I_BR _|I_BC (_, _)|I_CBZ (_, _, _)
       | I_CBNZ (_, _, _)|I_BL _|I_BLR _|I_RET _|I_ERET|I_LDAR (_, _, _, _)
       | I_TBNZ(_,_,_,_) | I_TBZ (_,_,_,_) | I_MOVZ (_,_,_,_) | I_MOVK(_,_,_,_)
@@ -400,6 +402,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_LD3SP (_,rs,_,_,_)
       | I_LD4SP (_,rs,_,_,_)
         -> rs
+      | I_MADD _
       | I_LDAP1 _
       | I_STL1 _
       | I_LD1 _|I_LD1M _|I_LD1R _|I_LD2 _
@@ -427,6 +430,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_LDAR (var,(XX|AX),_,_)|I_LDXP (var,_,_,_,_) -> MachSize.Ld (tr_variant var)
       | I_LDARBH (bh,(XX|AX),_,_) -> MachSize.Ld (bh_to_sz bh)
       | I_STXR _|I_STXRBH _ | I_STXP _ -> MachSize.St
+      | I_MADD _
       | I_LDAR (_, (AA|AQ), _, _)|I_LDARBH (_, (AA|AQ), _, _)
       | I_NOP|I_B _|I_BR _|I_BC _|I_CBZ _|I_CBNZ _
       | I_TBNZ _|I_TBZ _|I_BL _|I_BLR _|I_RET _|I_ERET

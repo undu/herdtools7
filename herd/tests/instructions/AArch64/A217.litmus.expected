@@ -1,0 +1,10 @@
+Test A217 Required
+States 1
+0:X0=5; 0:X1=1; 0:X2=2; 0:X3=3;
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Condition forall (0:X0=5 /\ 0:X1=1 /\ 0:X2=2 /\ 0:X3=3)
+Observation A217 Always 1 0
+Hash=1e21f1ff7d0c97ef284d656651844b58
+

@@ -2947,6 +2947,15 @@ module Make
         match inst with
         | I_NOP ->(* Instructions nop and branch below do not generate events, use a placeholder *)
            !(M.mk_singleton_es (Act.NoAction) ii)
+        | I_MADD (d,n,m,a) ->
+            let write vd = write_reg d vd ii in
+            let add_and_write ((vn, vm), va) =
+              M.op3 Op.Madd vn vm va >>= write
+            in
+            !(read_reg_ord n ii >>|
+              read_reg_ord m ii >>|
+              read_reg_ord a ii >>=
+              add_and_write)
         (* Branches *)
         | I_B l ->
            M.mk_singleton_es (Act.NoAction) ii

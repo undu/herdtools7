@@ -95,6 +95,6 @@ val pp_op1 : bool -> (bool -> 'aop -> string) -> 'aop op1 -> string
 (* Ternary *)
 (***********)
 
-type op3 = If
+type op3 = If | Madd
 
 val pp_op3 : op3 -> string -> string -> string ->  string

@@ -38,6 +38,7 @@ match name with
 | "hint"|"HINT" -> HINT
 (* Halt instructions are used by Debug mode, not needed here - NOP *)
 | "hlt" | "HLT" -> HLT
+| "madd" | "MADD" -> MADD
 (* Branch *)
 | "b"  | "B"  -> TOK_B
 | "br"  | "BR"  -> BR
