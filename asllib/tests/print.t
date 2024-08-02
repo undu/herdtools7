@@ -5,6 +5,7 @@
   >   print (32);
   >   return 0;
   > end
+  > EOF
 
   $ aslref print.asl
   Wow 2 3.14 some other string
@@ -18,6 +19,7 @@
   >   print (32);
   >   return 0;
   > end
+  > EOF
 
   $ aslref print.asl
   File print.asl, line 2, characters 16 to 24:
