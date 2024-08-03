@@ -2307,6 +2307,26 @@ module Make
             (M.unitT orig) >>= fun v ->
               write_reg_scalable dst v ii
 
+      let xor_elems (v1,v2) = M.op Op.Xor v1 v2
+
+      let eor_sv r1 r2 r3 ii =
+        let nelem = scalable_nelem r1 in
+        let esize = scalable_esize r1 in
+        read_reg_scalable false r3 ii >>|
+        read_reg_scalable false r2 ii >>= fun (v1,v2) ->
+          let eor cur_val idx =
+            scalable_getlane v1 idx esize >>|
+            scalable_getlane v2 idx esize >>=
+            xor_elems >>= scalable_setlane cur_val idx esize
+          in
+          let rec reduce idx op =
+            match idx with
+            | 0 -> op >>= fun old_val -> eor old_val idx
+            | _ -> reduce (idx-1) (op >>= fun old_val -> eor old_val idx)
+          in
+          reduce (nelem-1) mzero >>= fun v ->
+            write_reg_scalable r1 v ii
+
       let while_op compare unsigned p var r1 r2 ii =
         let psize = predicate_psize p in
         let nelem = predicate_nelem p in
@@ -3362,6 +3382,9 @@ module Make
         | I_NEG_SV(r1,pg,r2) ->
           check_sve inst;
           !(neg r1 pg r2 ii)
+        | I_EOR_SV (r1,r2,r3) ->
+          check_sve inst;
+          !(eor_sv r1 r2 r3 ii)
         | I_MOV_SV(r,k,shift) ->
           check_sve inst;
           !(mov_sv r k shift ii)

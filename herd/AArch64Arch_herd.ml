@@ -119,6 +119,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
     | I_RDVL _ | I_ADDVL _ | I_CNT_INC_SVE _
     | I_DUP_SV _ | I_ADD_SV _ | I_PTRUE _
     | I_NEG_SV _ | I_MOVPRFX _
+    | I_EOR_SV _
       -> true
 
     let is_cmodx_restricted_value =
@@ -319,6 +320,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_UADDV _
       | I_MOV_SV _ | I_DUP_SV _ | I_ADD_SV _ | I_PTRUE _
       | I_NEG_SV _ | I_MOVPRFX _
+      | I_EOR_SV _
       | I_INDEX_SI _ | I_INDEX_IS _ | I_INDEX_SS _ | I_INDEX_II _
       | I_RDVL _ | I_ADDVL _ | I_CNT_INC_SVE _
           -> None
@@ -390,6 +392,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_MOV_SV (r,_,_)
       | I_DUP_SV (r,_,_) | I_ADD_SV (r,_,_) | I_PTRUE (r,_)
       | I_NEG_SV (r,_,_) | I_MOVPRFX (r,_,_)
+      | I_EOR_SV (r,_,_)
       | I_INDEX_SI (r,_,_,_) | I_INDEX_IS (r,_,_,_) | I_INDEX_SS (r,_,_,_) | I_INDEX_II (r,_,_)
       | I_RDVL (r,_) | I_ADDVL (r,_,_) | I_CNT_INC_SVE (_,r,_,_)
         -> [r]
@@ -471,6 +474,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_ADD_SV _ | I_PTRUE _
       | I_NEG_SV _ | I_MOVPRFX _
       | I_MOV_SV _ | I_DUP_SV _
+      | I_EOR_SV _
       | I_INDEX_SI _ | I_INDEX_IS _ | I_INDEX_SS _ | I_INDEX_II _
       | I_RDVL _ | I_ADDVL _ | I_CNT_INC_SVE _
         -> MachSize.No
