@@ -96,7 +96,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
     | I_EOR_SIMD _| I_ERET| I_FENCE _| I_GC _| I_IC _| I_LD1 _| I_LD1M _| I_LD1R _ | I_LDAP1 _
     | I_LD2 _| I_LD2M _| I_LD2R _| I_LD3 _| I_LD3M _| I_LD3R _| I_LD4 _| I_LD4M _
     | I_LD4R _| I_LDAR _| I_LDARBH _| I_LDCT _| I_LDG _| I_LDOP _| I_LDOPBH _
-    | I_LDP _| I_LDP_SIMD _| I_LDPSW _| I_LDR _
+    | I_LDP _| I_LDP_SIMD _| I_LDPSW _| I_LDR _ | I_IRG _
     | I_LDRSW _ | I_LDR_SIMD _ | I_LDAPUR_SIMD _
     | I_LDRBH _| I_LDRS _| I_LDUR _| I_LDUR_SIMD _| I_LDXP _| I_MOV _ | I_FMOV_TG _
     | I_ADDV _| I_DUP _ | I_MOV_FG _| I_MOV_S _| I_MOV_TG _| I_MOV_V _| I_MOV_VE _| I_MOVI_S _
@@ -306,7 +306,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_ADR (_, _)|I_RBIT (_, _, _)|I_ABS _|I_REV _|I_EXTR _|I_FENCE _
       | I_SBFM (_,_,_,_,_) | I_UBFM (_,_,_,_,_)
       | I_CSEL (_, _, _, _, _, _)|I_IC (_, _)|I_DC (_, _)|I_MRS (_, _)|I_MSR (_, _)
-      | I_STG _ | I_LDG _
+      | I_STG _ | I_LDG _ | I_IRG _
       | I_ALIGND _| I_ALIGNU _|I_BUILD _|I_CHKEQ _|I_CHKSLD _|I_CHKTGD _
       | I_CLRTAG _|I_CPYTYPE _|I_CPYVALUE _|I_CSEAL _|I_GC _|I_LDCT _|I_SEAL _
       | I_STCT _|I_UNSEAL _
@@ -424,7 +424,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_BUILD _|I_CHKEQ _|I_CHKSLD _|I_CHKTGD _|I_CLRTAG _
       | I_CPYTYPE _|I_CPYVALUE _|I_CSEAL _|I_GC _
       | I_LDCT _|I_SC _|I_SEAL _|I_STCT _
-      | I_UNSEAL _|I_LDG _
+      | I_UNSEAL _|I_LDG _ | I_IRG _
       | I_CASP _
         ->
          all_regs (* safe approximation *)
@@ -465,7 +465,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_MOV _|I_MOVZ _|I_MOVN _|I_MOVK _|I_SXTW _
       | I_OP3 _|I_ADR _|I_RBIT _|I_ABS _|I_REV _|I_EXTR _|I_FENCE _
       | I_CSEL _|I_IC _|I_DC _|I_TLBI _|I_MRS _|I_MSR _
-      | I_STG _|I_STZG _|I_STZ2G _|I_LDG _|I_UDF _
+      | I_STG _|I_STZG _|I_STZ2G _|I_LDG _|I_UDF _ | I_IRG _
       | I_ADDSUBEXT _|I_MOPL _
       | I_WHILELT _ | I_WHILELE _ | I_WHILELO _ | I_WHILELS _
       | I_UADDV _

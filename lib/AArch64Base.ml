@@ -1576,6 +1576,7 @@ type 'k kinstruction =
   | I_STZ2G of reg * reg * 'k idx
   | I_LDG of reg * reg * 'k
   | I_UDF of 'k
+  | I_IRG of reg * reg * reg
 
 type instruction = int kinstruction
 type parsedInstruction = MetaConst.k kinstruction
@@ -2250,6 +2251,8 @@ let do_pp_instruction m =
       pp_mem "LDG" V64 rt rn (K k)
   | I_UDF k ->
       sprintf "UDF %s" (m.pp_k k)
+  | I_IRG (rd,rn,rm) ->
+      sprintf "IDG %s,%s,%s" (pp_reg rd) (pp_reg rn) (pp_reg rm)
 
 let m_int = { compat = false ; pp_k = string_of_int ;
               zerop = (function 0 -> true | _ -> false);
@@ -2412,6 +2415,7 @@ let fold_regs (f_regs,f_sregs) =
   | I_LDOPBH (_,_,_,r1,r2,r3)
   | I_ADDSUBEXT (_,_,r1,r2,(_,r3),_)
   | I_EXTR (_,r1,r2,r3,_)
+  | I_IRG (r1,r2,r3)
     -> fold_reg r1 (fold_reg r2 (fold_reg r3 c))
   | I_STXP (_,_,r1,r2,r3,r4)
   | I_MOPL (_,r1,r2,r3,r4)
@@ -2775,6 +2779,8 @@ let map_regs f_reg f_symb =
       I_STZ2G (map_reg r1,map_reg r2,k)
   | I_LDG (r1,r2,k) ->
       I_LDG (map_reg r1,map_reg r2, k)
+  | I_IRG (r1,r2,r3) ->
+      I_IRG (map_reg r1,map_reg r2,map_reg r3)
 
 (* No addresses burried in ARM code *)
 let fold_addrs _f c _ins = c
@@ -2848,7 +2854,7 @@ let get_next =
   | I_DC _
   | I_TLBI _
   | I_MRS _ | I_MSR _
-  | I_STG _|I_STZG _|I_STZ2G _|I_LDG _
+  | I_STG _|I_STZG _|I_STZ2G _|I_LDG _| I_IRG _
   | I_ALIGND _| I_ALIGNU _|I_BUILD _|I_CHKEQ _|I_CHKSLD _|I_CHKTGD _|I_CLRTAG _
   | I_CPYTYPE _|I_CPYVALUE _|I_CSEAL _|I_GC _|I_LDCT _|I_SC _|I_SEAL _|I_STCT _
   | I_UNSEAL _
@@ -3126,6 +3132,7 @@ module PseudoI = struct
         | I_MOV_S _
         | I_LDXP _| I_STXP _
         | I_MOPL _
+        | I_IRG _
         | I_WHILELT _ | I_WHILELE _ | I_WHILELO _| I_WHILELS _
         | I_UADDV _ | I_DUP_SV _ | I_PTRUE _
         | I_ADD_SV _ | I_INDEX_SS _
@@ -3291,6 +3298,7 @@ module PseudoI = struct
         | I_ABS _
         | I_REV _
         | I_EXTR _
+        | I_IRG _
 (*        | I_TLBI (_,ZR) *)
         | I_MRS _ | I_MSR _
         | I_ALIGND _| I_ALIGNU _|I_BUILD _|I_CHKEQ _|I_CHKSLD _|I_CHKTGD _

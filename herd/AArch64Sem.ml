@@ -2803,6 +2803,21 @@ module Make
              lift_memop rn Dir.R false false (fun ac ma _mv -> do_ldg ac ma)
                (to_perms "w" MachSize.S128) ma mzero Annot.N ii)
 
+      let irg d n m ii =
+        (* TODO:
+           how to check for allocation tag access is enabled and GCR_EL1.RRND ?
+         *)
+        let write_d vd = write_reg d vd ii in
+        let random_tag (vn, _vm) =
+          let tag = Random.int 8 |> V.intToV in
+          M.op Op.SetTag vn tag
+        in
+        read_reg_ord m ii >>|
+        read_reg_ord n ii >>=
+        random_tag >>=
+        write_d >>=
+        B.next1T
+
       type double = Once|Twice
 
       let stg d rt rn k ii =
@@ -3090,6 +3105,9 @@ module Make
         | I_LDG (rt,rn,k) ->
             check_memtag "LDG" ;
             ldg rt rn k ii
+        | I_IRG (rd,rn,rm) ->
+            check_memtag "IRG" ;
+            irg rd rn rm ii
         | I_STXR(var,t,rr,rs,rd) ->
             stxr (tr_variant var) t rr rs rd ii
         | I_STXRBH(bh,t,rr,rs,rd) ->
